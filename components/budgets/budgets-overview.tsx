@@ -88,82 +88,73 @@ export function BudgetsOverview() {
         </CardHeader>
         <CardContent>
           {budgetProgress.length > 0 ? (
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {budgetProgress.map((budget) => (
-                <div key={budget.id} className="space-y-3 p-4 rounded-lg bg-white/50 dark:bg-gray-700/50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                <Card key={budget.id} className="bg-white/80 dark:bg-gray-800/80 border-0 shadow-md">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <div className="flex items-center gap-2">
                       <div 
-                        className="w-4 h-4 rounded-full"
+                        className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: budget.categoryColor }}
                       />
                       <span className="font-medium text-gray-900 dark:text-white">
                         {budget.categoryName}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          ₹{budget.spent.toLocaleString('en-IN', { minimumFractionDigits: 2 })} / 
-                          ₹{budget.limit_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                        </div>
-                        <div className={`text-xs ${
-                          budget.isOverBudget 
-                            ? 'text-red-600 dark:text-red-400' 
-                            : 'text-green-600 dark:text-green-400'
-                        }`}>
-                          {budget.isOverBudget 
-                            ? `Over by ₹${Math.abs(budget.remaining).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
-                            : `Remaining: ₹${budget.remaining.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
-                          }
-                        </div>
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        ₹{budget.spent.toLocaleString('en-IN', { minimumFractionDigits: 2 })} / 
+                        ₹{budget.limit_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleEdit(budget)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Edit
-                          </DropdownMenuItem>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Budget</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete this budget? This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction 
-                                  onClick={() => handleDelete(budget.id)}
-                                  className="bg-red-600 hover:bg-red-700"
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <div className={`text-xs ${
+                        budget.isOverBudget 
+                          ? 'text-red-600 dark:text-red-400' 
+                          : 'text-green-600 dark:text-green-400'
+                      }`}>
+                        {budget.isOverBudget 
+                          ? `Over by ₹${Math.abs(budget.remaining).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                          : `Remaining: ₹${budget.remaining.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                        }
+                      </div>
                     </div>
-                  </div>
-                  <Progress 
-                    value={budget.percentage} 
-                    className="h-3"
-                    indicatorClassName={budget.isOverBudget ? 'bg-red-500' : 'bg-green-500'}
-                  />
-                </div>
+                  </CardHeader>
+                  <CardContent>
+                    <Progress 
+                      value={budget.percentage} 
+                      className="h-2"
+                      indicatorClassName={budget.isOverBudget ? 'bg-red-500' : 'bg-green-500'}
+                    />
+                    <div className="flex justify-end gap-2 mt-2">
+                      <Button size="icon" variant="ghost" onClick={() => handleEdit(budget)}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size="icon" variant="ghost">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Budget</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete this budget? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDelete(budget.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           ) : (

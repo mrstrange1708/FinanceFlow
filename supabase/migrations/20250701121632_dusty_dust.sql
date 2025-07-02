@@ -229,17 +229,20 @@ BEGIN
     END IF;
     RETURN NEW;
   ELSIF TG_OP = 'UPDATE' THEN
-    -- Reverse old transaction
-    IF OLD.type = 'income' THEN
-      UPDATE accounts SET balance = balance - OLD.amount WHERE id = OLD.account_id;
-    ELSIF OLD.type = 'expense' THEN
-      UPDATE accounts SET balance = balance + OLD.amount WHERE id = OLD.account_id;
-    END IF;
-    -- Apply new transaction
-    IF NEW.type = 'income' THEN
-      UPDATE accounts SET balance = balance + NEW.amount WHERE id = NEW.account_id;
-    ELSIF NEW.type = 'expense' THEN
-      UPDATE accounts SET balance = balance - NEW.amount WHERE id = NEW.account_id;
+    -- Only reverse and re-apply if amount, type, or account_id changed
+    IF (OLD.amount <> NEW.amount OR OLD.type <> NEW.type OR OLD.account_id <> NEW.account_id) THEN
+      -- Reverse old transaction
+      IF OLD.type = 'income' THEN
+        UPDATE accounts SET balance = balance - OLD.amount WHERE id = OLD.account_id;
+      ELSIF OLD.type = 'expense' THEN
+        UPDATE accounts SET balance = balance + OLD.amount WHERE id = OLD.account_id;
+      END IF;
+      -- Apply new transaction
+      IF NEW.type = 'income' THEN
+        UPDATE accounts SET balance = balance + NEW.amount WHERE id = NEW.account_id;
+      ELSIF NEW.type = 'expense' THEN
+        UPDATE accounts SET balance = balance - NEW.amount WHERE id = NEW.account_id;
+      END IF;
     END IF;
     RETURN NEW;
   ELSIF TG_OP = 'DELETE' THEN

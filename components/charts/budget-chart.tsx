@@ -57,10 +57,10 @@ export function BudgetChart({ showAll = false }: BudgetChartProps) {
       </CardHeader>
       <CardContent>
         {displayBudgets.length > 0 ? (
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayBudgets.map((budget) => (
-              <div key={budget.id} className="space-y-2">
-                <div className="flex items-center justify-between">
+              <Card key={budget.id} className="bg-white/80 dark:bg-gray-800/80 border-0 shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <div className="flex items-center gap-2">
                     <div 
                       className="w-3 h-3 rounded-full"
@@ -86,13 +86,15 @@ export function BudgetChart({ showAll = false }: BudgetChartProps) {
                       }
                     </div>
                   </div>
-                </div>
-                <Progress 
-                  value={budget.percentage} 
-                  className="h-2"
-                  indicatorClassName={budget.isOverBudget ? 'bg-red-500' : 'bg-green-500'}
-                />
-              </div>
+                </CardHeader>
+                <CardContent>
+                  <Progress 
+                    value={budget.percentage} 
+                    className="h-2"
+                    indicatorClassName={budget.isOverBudget ? 'bg-red-500' : 'bg-green-500'}
+                  />
+                </CardContent>
+              </Card>
             ))}
           </div>
         ) : (

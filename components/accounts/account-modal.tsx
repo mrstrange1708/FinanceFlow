@@ -18,10 +18,15 @@ interface AccountModalProps {
 
 const accountTypes = [
   { value: 'card', label: 'Credit Card' },
+  { value: 'debit_card', label: 'Debit Card' },
   { value: 'wallet', label: 'Wallet' },
   { value: 'cash', label: 'Cash' },
   { value: 'investment', label: 'Investment' },
   { value: 'savings', label: 'Savings' },
+  { value: 'piggy_bank', label: 'Piggy Bank' },
+  { value: 'shop', label: 'Shop' },
+  { value: 'bitcoin', label: 'Bitcoin' },
+  { value: 'store', label: 'Store' },
 ];
 
 const accountColors = [
@@ -31,8 +36,7 @@ const accountColors = [
 
 export function AccountModal({ open, onOpenChange, account }: AccountModalProps) {
   const [name, setName] = useState('');
-  const [type, setType] = useState<'card' | 'wallet' | 'cash' | 'investment' | 'savings'>('wallet');
-  const [balance, setBalance] = useState('');
+  const [type, setType] = useState<string>('wallet');
   const [color, setColor] = useState('#3B82F6');
   const [loading, setLoading] = useState(false);
 
@@ -43,12 +47,10 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
     if (account) {
       setName(account.name);
       setType(account.type);
-      setBalance(account.balance.toString());
       setColor(account.color);
     } else {
       setName('');
       setType('wallet');
-      setBalance('');
       setColor('#3B82F6');
     }
   }, [account]);
@@ -63,7 +65,7 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
       const accountData = {
         name,
         type,
-        balance: parseFloat(balance),
+        balance: 0,
         color,
         icon: type, // Use type as icon for simplicity
       };
@@ -120,19 +122,6 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="balance">Initial Balance</Label>
-            <Input
-              id="balance"
-              type="number"
-              step="0.01"
-              placeholder="0.00"
-              value={balance}
-              onChange={(e) => setBalance(e.target.value)}
-              required
-            />
           </div>
 
           <div className="space-y-2">

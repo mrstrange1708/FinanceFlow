@@ -86,6 +86,7 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
         toast.success('Transaction added successfully!');
       }
 
+      await useFinanceStore.getState().fetchAccounts();
       onOpenChange(false);
     } catch (error) {
       toast.error(transaction ? 'Failed to update transaction' : 'Failed to add transaction');

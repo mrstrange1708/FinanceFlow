@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFinanceStore } from '@/store/finance-store';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
+import { format, isSameDay, parseISO, compareDesc } from 'date-fns';
 import { TrendingUp, TrendingDown, ArrowRightLeft, Edit, Trash2, MoreHorizontal } from 'lucide-react';
 import { TransactionModal } from '@/components/transactions/transaction-modal';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -22,6 +22,15 @@ export function RecentTransactions({ showAll = false }: RecentTransactionsProps)
   const [showEditModal, setShowEditModal] = useState(false);
 
   const displayTransactions = showAll ? transactions : transactions.slice(0, 10);
+
+  // Group transactions by date (latest first)
+  const groupedTransactions: { [date: string]: typeof displayTransactions } = {};
+  displayTransactions.forEach((transaction) => {
+    const dateKey = format(new Date(transaction.transaction_date), 'yyyy-MM-dd');
+    if (!groupedTransactions[dateKey]) groupedTransactions[dateKey] = [];
+    groupedTransactions[dateKey].push(transaction);
+  });
+  const sortedDates = Object.keys(groupedTransactions).sort((a, b) => compareDesc(parseISO(a), parseISO(b)));
 
   const getTransactionIcon = (type: string) => {
     switch (type) {
@@ -78,76 +87,84 @@ export function RecentTransactions({ showAll = false }: RecentTransactionsProps)
         </CardHeader>
         <CardContent>
           {displayTransactions.length > 0 ? (
-            <div className="space-y-4">
-              {displayTransactions.map((transaction) => {
-                const category = categories.find(c => c.id === transaction.category_id);
-                const account = accounts.find(a => a.id === transaction.account_id);
-                
-                return (
-                  <div key={transaction.id} className="flex items-center justify-between p-4 rounded-lg bg-white/50 dark:bg-gray-700/50 hover:bg-white/70 dark:hover:bg-gray-700/70 transition-colors">
-                    <div className="flex items-center gap-3">
-                      {getTransactionIcon(transaction.type)}
-                      <div>
-                        <div className="font-medium text-gray-900 dark:text-white">
-                          {transaction.description || category?.name || 'Unknown'}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {account?.name} • {format(new Date(transaction.transaction_date), 'MMM d, yyyy')}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <div className={`font-semibold ${getTransactionColor(transaction.type)}`}>
-                          {transaction.type === 'expense' ? '-' : '+'}
-                          ₹{transaction.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                        </div>
-                        <Badge variant="secondary" className="text-xs">
-                          {category?.name || 'Unknown'}
-                        </Badge>
-                      </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleEdit(transaction)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Edit
-                          </DropdownMenuItem>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete this transaction? This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction 
-                                  onClick={() => handleDelete(transaction.id)}
-                                  className="bg-red-600 hover:bg-red-700"
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+            <div className="space-y-8">
+              {sortedDates.map(dateKey => (
+                <div key={dateKey}>
+                  <div className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    {format(parseISO(dateKey), 'MMM dd, yyyy (EEEE)')}
                   </div>
-                );
-              })}
+                  <div className="space-y-4">
+                    {groupedTransactions[dateKey].map((transaction) => {
+                      const category = categories.find(c => c.id === transaction.category_id);
+                      const account = accounts.find(a => a.id === transaction.account_id);
+                      return (
+                        <div key={transaction.id} className="flex items-center justify-between p-4 rounded-lg bg-white/50 dark:bg-gray-700/50 hover:bg-white/70 dark:hover:bg-gray-700/70 transition-colors">
+                          <div className="flex items-center gap-3">
+                            {getTransactionIcon(transaction.type)}
+                            <div>
+                              <div className="font-medium text-gray-900 dark:text-white">
+                                {transaction.description || category?.name || 'Unknown'}
+                              </div>
+                              <div className="text-sm text-gray-600 dark:text-gray-400">
+                                {account?.name}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              <div className={`font-semibold ${getTransactionColor(transaction.type)}`}>
+                                {transaction.type === 'expense' ? '-' : '+'}
+                                ₹{transaction.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                              </div>
+                              <Badge variant="secondary" className="text-xs">
+                                {category?.name || 'Unknown'}
+                              </Badge>
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleEdit(transaction)}>
+                                  <Edit className="w-4 h-4 mr-2" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                      <Trash2 className="w-4 h-4 mr-2" />
+                                      Delete
+                                    </DropdownMenuItem>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to delete this transaction? This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction 
+                                        onClick={() => handleDelete(transaction.id)}
+                                        className="bg-red-600 hover:bg-red-700"
+                                      >
+                                        Delete
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500 dark:text-gray-400">

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useFinanceStore } from '@/store/finance-store';
-import { Plus, Wallet, CreditCard, Banknote, TrendingUp, PiggyBank, MoreHorizontal } from 'lucide-react';
+import { Plus, Wallet, CreditCard, Banknote, TrendingUp, PiggyBank, MoreHorizontal, BadgeCent, ShoppingBag, Bitcoin, Store } from 'lucide-react';
 import { AccountModal } from '@/components/accounts/account-modal';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
@@ -18,6 +18,8 @@ export function AccountsOverview() {
     switch (type) {
       case 'card':
         return <CreditCard className="w-6 h-6" />;
+      case 'debit_card':
+        return <BadgeCent className="w-6 h-6" />;
       case 'wallet':
         return <Wallet className="w-6 h-6" />;
       case 'cash':
@@ -26,6 +28,14 @@ export function AccountsOverview() {
         return <TrendingUp className="w-6 h-6" />;
       case 'savings':
         return <PiggyBank className="w-6 h-6" />;
+      case 'piggy_bank':
+        return <PiggyBank className="w-6 h-6" />;
+      case 'shop':
+        return <ShoppingBag className="w-6 h-6" />;
+      case 'bitcoin':
+        return <Bitcoin className="w-6 h-6" />;
+      case 'store':
+        return <Store className="w-6 h-6" />;
       default:
         return <Wallet className="w-6 h-6" />;
     }

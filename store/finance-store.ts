@@ -2,7 +2,17 @@ import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 import { Database } from '@/lib/supabase';
 
-type Account = Database['public']['Tables']['accounts']['Row'];
+type Account = {
+  id: string;
+  user_id: string;
+  name: string;
+  type: 'card' | 'debit_card' | 'wallet' | 'cash' | 'investment' | 'savings' | 'piggy_bank' | 'shop' | 'bitcoin' | 'store';
+  balance: number;
+  icon: string;
+  color: string;
+  created_at: string;
+  updated_at: string;
+};
 type Category = Database['public']['Tables']['categories']['Row'];
 type Transaction = Database['public']['Tables']['transactions']['Row'];
 type Budget = Database['public']['Tables']['budgets']['Row'];
@@ -302,7 +312,12 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     try {
       const { data, error } = await supabase
         .from('budgets')
-        .insert([budget])
+        .insert([{
+          ...budget,
+          start_date: budget.start_date ?? new Date().toISOString().split('T')[0],
+          end_date: budget.end_date ?? new Date().toISOString().split('T')[0],
+          user_id: budget.user_id ?? '', // Ensure this is set correctly before calling
+        }])
         .select()
         .single();
       
@@ -312,7 +327,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
         budgets: [data, ...state.budgets],
       }));
     } catch (error) {
-      console.error('Error adding budget:', error);
+      console.error('Error adding budget:', error, error?.message);
       throw error;
     }
   },

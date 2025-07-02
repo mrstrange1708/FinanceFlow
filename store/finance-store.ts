@@ -44,7 +44,11 @@ interface FinanceState {
   
   // Budget methods
   fetchBudgets: () => Promise<void>;
-  addBudget: (budget: Omit<Budget, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  addBudget: (budget: Omit<Budget, 'id' | 'created_at' | 'updated_at'> & {
+    start_date?: string;
+    end_date?: string;
+    user_id?: string;
+  }) => Promise<void>;
   updateBudget: (id: string, updates: Partial<Budget>) => Promise<void>;
   deleteBudget: (id: string) => Promise<void>;
 }
@@ -327,7 +331,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
         budgets: [data, ...state.budgets],
       }));
     } catch (error) {
-      console.error('Error adding budget:', error, error?.message);
+      console.error('Error adding budget:', error);
       throw error;
     }
   },

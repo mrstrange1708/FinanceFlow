@@ -43,7 +43,7 @@ export function ExpenseChart() {
         <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border">
           <p className="font-medium">{payload[0].name}</p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            ${payload[0].value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            ₹{payload[0].value.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </p>
         </div>
       );

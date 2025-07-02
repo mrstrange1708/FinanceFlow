@@ -100,7 +100,7 @@ export function RecentTransactions({ showAll = false }: RecentTransactionsProps)
                       <div className="text-right">
                         <div className={`font-semibold ${getTransactionColor(transaction.type)}`}>
                           {transaction.type === 'expense' ? '-' : '+'}
-                          ${transaction.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          ₹{transaction.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </div>
                         <Badge variant="secondary" className="text-xs">
                           {category?.name || 'Unknown'}

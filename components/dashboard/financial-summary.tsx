@@ -24,6 +24,8 @@ export function FinancialSummary() {
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0);
 
+  const netIncome = monthlyIncome - monthlyExpenses;
+
   const summaryCards = [
     {
       title: 'Total Balance',
@@ -48,10 +50,10 @@ export function FinancialSummary() {
     },
     {
       title: 'Net Income',
-      value: monthlyIncome - monthlyExpenses,
+      value: netIncome,
       icon: DollarSign,
-      color: monthlyIncome - monthlyExpenses >= 0 ? 'text-green-600' : 'text-red-600',
-      bgColor: monthlyIncome - monthlyExpenses >= 0 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20',
+      color: netIncome >= 0 ? 'text-green-600' : 'text-red-600',
+      bgColor: netIncome >= 0 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20',
     },
   ];
 
@@ -69,7 +71,7 @@ export function FinancialSummary() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900 dark:text-white">
-              ${Math.abs(card.value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {card.value < 0 ? '-₹' : '₹'}{Math.abs(card.value).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
               {card.title === 'Total Balance' ? 'All accounts' : format(currentMonth, 'MMMM yyyy')}

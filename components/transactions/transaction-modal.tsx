@@ -135,7 +135,7 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
               <SelectContent>
                 {accounts.map((account) => (
                   <SelectItem key={account.id} value={account.id}>
-                    {account.name} (${account.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })})
+                    {account.name} (₹{account.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -159,7 +159,7 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount">Amount</Label>
+            <Label htmlFor="amount">Amount (₹)</Label>
             <div className="flex gap-2">
               <Input
                 id="amount"

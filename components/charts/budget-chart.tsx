@@ -72,8 +72,8 @@ export function BudgetChart({ showAll = false }: BudgetChartProps) {
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      ${budget.spent.toLocaleString('en-US', { minimumFractionDigits: 2 })} / 
-                      ${budget.limit_amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      ₹{budget.spent.toLocaleString('en-IN', { minimumFractionDigits: 2 })} / 
+                      ₹{budget.limit_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </div>
                     <div className={`text-xs ${
                       budget.isOverBudget 
@@ -81,8 +81,8 @@ export function BudgetChart({ showAll = false }: BudgetChartProps) {
                         : 'text-green-600 dark:text-green-400'
                     }`}>
                       {budget.isOverBudget 
-                        ? `Over by $${Math.abs(budget.remaining).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
-                        : `Remaining: $${budget.remaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+                        ? `Over by ₹${Math.abs(budget.remaining).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                        : `Remaining: ₹${budget.remaining.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
                       }
                     </div>
                   </div>

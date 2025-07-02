@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useFinanceStore } from '@/store/finance-store';
-import { Plus, Wallet, CreditCard, Banknote, TrendingUp, Piggy, MoreHorizontal } from 'lucide-react';
+import { Plus, Wallet, CreditCard, Banknote, TrendingUp, PiggyBank, MoreHorizontal } from 'lucide-react';
 import { AccountModal } from '@/components/accounts/account-modal';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
@@ -25,7 +25,7 @@ export function AccountsOverview() {
       case 'investment':
         return <TrendingUp className="w-6 h-6" />;
       case 'savings':
-        return <Piggy className="w-6 h-6" />;
+        return <PiggyBank className="w-6 h-6" />;
       default:
         return <Wallet className="w-6 h-6" />;
     }

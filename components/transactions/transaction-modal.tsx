@@ -19,7 +19,7 @@ interface TransactionModalProps {
 }
 
 export function TransactionModal({ open, onOpenChange, transaction }: TransactionModalProps) {
-  const [type, setType] = useState<'income' | 'expense' | 'transfer'>('expense');
+  const [type, setType] = useState<'income' | 'expense'>('expense');
   const [accountId, setAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [amount, setAmount] = useState('');
@@ -107,7 +107,7 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <Button
               type="button"
               variant={type === 'income' ? 'default' : 'outline'}
@@ -123,14 +123,6 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
               onClick={() => setType('expense')}
             >
               Expense
-            </Button>
-            <Button
-              type="button"
-              variant={type === 'transfer' ? 'default' : 'outline'}
-              className={type === 'transfer' ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-blue-50'}
-              onClick={() => setType('transfer')}
-            >
-              Transfer
             </Button>
           </div>
 

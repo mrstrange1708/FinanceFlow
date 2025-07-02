@@ -197,7 +197,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     }
   },
 
-  // Transaction methods - FIXED: Removed automatic balance updates to prevent doubling
+  // Transaction methods
   fetchTransactions: async () => {
     set({ loading: true });
     try {
@@ -288,7 +288,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     try {
       const { data, error } = await supabase
         .from('budgets')
-        .select('id, user_id, category_id, limit_amount, month, created_at, updated_at')
+        .select('*')
         .order('month', { ascending: false });
       
       if (error) throw error;
@@ -303,7 +303,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       const { data, error } = await supabase
         .from('budgets')
         .insert([budget])
-        .select('id, user_id, category_id, limit_amount, month, created_at, updated_at')
+        .select()
         .single();
       
       if (error) throw error;
@@ -323,7 +323,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
         .from('budgets')
         .update(updates)
         .eq('id', id)
-        .select('id, user_id, category_id, limit_amount, month, created_at, updated_at')
+        .select()
         .single();
       
       if (error) throw error;

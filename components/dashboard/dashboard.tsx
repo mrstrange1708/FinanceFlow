@@ -10,6 +10,8 @@ import { IncomeChart } from '@/components/charts/income-chart';
 import { BudgetChart } from '@/components/charts/budget-chart';
 import { RecentTransactions } from '@/components/transactions/recent-transactions';
 import { AccountsOverview } from '@/components/accounts/accounts-overview';
+import { BudgetsOverview } from '@/components/budgets/budgets-overview';
+import { CategoriesOverview } from '@/components/categories/categories-overview';
 import { TransactionModal } from '@/components/transactions/transaction-modal';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -37,9 +39,9 @@ export function Dashboard() {
       case 'accounts':
         return <AccountsOverview />;
       case 'budgets':
-        return <BudgetChart showAll />;
+        return <BudgetsOverview />;
       case 'categories':
-        return <div>Categories management coming soon...</div>;
+        return <CategoriesOverview />;
       default:
         return <div>Page not found</div>;
     }

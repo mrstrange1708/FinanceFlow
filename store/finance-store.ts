@@ -197,7 +197,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     }
   },
 
-  // Transaction methods
+  // Transaction methods - FIXED: Removed automatic balance updates to prevent doubling
   fetchTransactions: async () => {
     set({ loading: true });
     try {
@@ -229,8 +229,8 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
         transactions: [data, ...state.transactions],
       }));
       
-      // Refresh accounts to update balances
-      get().fetchAccounts();
+      // Refresh accounts to get updated balances from database triggers
+      await get().fetchAccounts();
     } catch (error) {
       console.error('Error adding transaction:', error);
       throw error;
@@ -254,8 +254,8 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
         ),
       }));
       
-      // Refresh accounts to update balances
-      get().fetchAccounts();
+      // Refresh accounts to get updated balances from database triggers
+      await get().fetchAccounts();
     } catch (error) {
       console.error('Error updating transaction:', error);
       throw error;
@@ -275,8 +275,8 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
         transactions: state.transactions.filter((transaction) => transaction.id !== id),
       }));
       
-      // Refresh accounts to update balances
-      get().fetchAccounts();
+      // Refresh accounts to get updated balances from database triggers
+      await get().fetchAccounts();
     } catch (error) {
       console.error('Error deleting transaction:', error);
       throw error;

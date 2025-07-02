@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,9 +15,10 @@ import { Calculator } from '@/components/ui/calculator';
 interface TransactionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  transaction?: any;
 }
 
-export function TransactionModal({ open, onOpenChange }: TransactionModalProps) {
+export function TransactionModal({ open, onOpenChange, transaction }: TransactionModalProps) {
   const [type, setType] = useState<'income' | 'expense' | 'transfer'>('expense');
   const [accountId, setAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -28,12 +29,35 @@ export function TransactionModal({ open, onOpenChange }: TransactionModalProps) 
   const [showCalculator, setShowCalculator] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { accounts, categories, addTransaction } = useFinanceStore();
+  const { accounts, categories, addTransaction, updateTransaction } = useFinanceStore();
   const { user } = useAuthStore();
 
   const filteredCategories = categories.filter(category => 
     category.type === type && (category.is_default || category.user_id === user?.id)
   );
+
+  useEffect(() => {
+    if (transaction) {
+      setType(transaction.type);
+      setAccountId(transaction.account_id);
+      setCategoryId(transaction.category_id);
+      setAmount(transaction.amount.toString());
+      setDescription(transaction.description || '');
+      
+      const transactionDate = new Date(transaction.transaction_date);
+      setDate(transactionDate.toISOString().split('T')[0]);
+      setTime(transactionDate.toTimeString().slice(0, 5));
+    } else {
+      // Reset form for new transaction
+      setType('expense');
+      setAccountId('');
+      setCategoryId('');
+      setAmount('');
+      setDescription('');
+      setDate(new Date().toISOString().split('T')[0]);
+      setTime(new Date().toTimeString().slice(0, 5));
+    }
+  }, [transaction, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,8 +67,7 @@ export function TransactionModal({ open, onOpenChange }: TransactionModalProps) 
     
     try {
       const transactionDate = new Date(`${date}T${time}`);
-      
-      await addTransaction({
+      const transactionData = {
         user_id: user.id,
         account_id: accountId,
         category_id: categoryId,
@@ -53,21 +76,19 @@ export function TransactionModal({ open, onOpenChange }: TransactionModalProps) 
         description: description || null,
         transaction_date: transactionDate.toISOString(),
         receipt_url: null,
-      });
+      };
 
-      toast.success('Transaction added successfully!');
+      if (transaction) {
+        await updateTransaction(transaction.id, transactionData);
+        toast.success('Transaction updated successfully!');
+      } else {
+        await addTransaction(transactionData);
+        toast.success('Transaction added successfully!');
+      }
+
       onOpenChange(false);
-      
-      // Reset form
-      setType('expense');
-      setAccountId('');
-      setCategoryId('');
-      setAmount('');
-      setDescription('');
-      setDate(new Date().toISOString().split('T')[0]);
-      setTime(new Date().toTimeString().slice(0, 5));
     } catch (error) {
-      toast.error('Failed to add transaction');
+      toast.error(transaction ? 'Failed to update transaction' : 'Failed to add transaction');
     } finally {
       setLoading(false);
     }
@@ -82,7 +103,7 @@ export function TransactionModal({ open, onOpenChange }: TransactionModalProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Transaction</DialogTitle>
+          <DialogTitle>{transaction ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -203,7 +224,7 @@ export function TransactionModal({ open, onOpenChange }: TransactionModalProps) 
 
           <div className="flex gap-2">
             <Button type="submit" disabled={loading} className="flex-1">
-              {loading ? 'Adding...' : 'Add Transaction'}
+              {loading ? (transaction ? 'Updating...' : 'Adding...') : (transaction ? 'Update Transaction' : 'Add Transaction')}
             </Button>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel

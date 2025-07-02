@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFinanceStore } from '@/store/finance-store';
-import { Pie } from 'react-chartjs-2';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 
 export function IncomeChart() {
@@ -25,45 +25,29 @@ export function IncomeChart() {
     return acc;
   }, {} as Record<string, number>);
 
-  const data = {
-    labels: Object.keys(incomeByCategory),
-    datasets: [
-      {
-        data: Object.values(incomeByCategory),
-        backgroundColor: [
-          '#10B981', '#059669', '#0D9488', '#06B6D4', '#3B82F6',
-          '#6366F1', '#8B5CF6', '#22C55E', '#84CC16', '#EAB308',
-          '#F59E0B', '#F97316', '#EF4444', '#DC2626', '#B91C1C'
-        ],
-        borderWidth: 0,
-      },
-    ],
-  };
+  const data = Object.entries(incomeByCategory).map(([name, value]) => ({
+    name,
+    value,
+  }));
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom' as const,
-        labels: {
-          padding: 20,
-          usePointStyle: true,
-          font: {
-            size: 12,
-          },
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: (context: any) => {
-            const label = context.label || '';
-            const value = context.parsed || 0;
-            return `${label}: $${value.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-          },
-        },
-      },
-    },
+  const COLORS = [
+    '#10B981', '#059669', '#0D9488', '#06B6D4', '#3B82F6',
+    '#6366F1', '#8B5CF6', '#22C55E', '#84CC16', '#EAB308',
+    '#F59E0B', '#F97316', '#EF4444', '#DC2626', '#B91C1C'
+  ];
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border">
+          <p className="font-medium">{payload[0].name}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            ${payload[0].value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </p>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -78,8 +62,25 @@ export function IncomeChart() {
       </CardHeader>
       <CardContent>
         <div className="h-80">
-          {Object.keys(incomeByCategory).length > 0 ? (
-            <Pie data={data} options={options} />
+          {data.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
               No income data for this month

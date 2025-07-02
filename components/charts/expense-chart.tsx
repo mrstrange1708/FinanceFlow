@@ -2,20 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFinanceStore } from '@/store/finance-store';
-import { Pie } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-} from 'chart.js';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
-
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 export function ExpenseChart() {
   const { transactions, categories } = useFinanceStore();
@@ -37,46 +25,30 @@ export function ExpenseChart() {
     return acc;
   }, {} as Record<string, number>);
 
-  const data = {
-    labels: Object.keys(expenseByCategory),
-    datasets: [
-      {
-        data: Object.values(expenseByCategory),
-        backgroundColor: [
-          '#EF4444', '#F97316', '#F59E0B', '#EAB308', '#84CC16',
-          '#22C55E', '#10B981', '#14B8A6', '#06B6D4', '#0EA5E9',
-          '#3B82F6', '#6366F1', '#8B5CF6', '#A855F7', '#D946EF',
-          '#EC4899', '#F43F5E'
-        ],
-        borderWidth: 0,
-      },
-    ],
-  };
+  const data = Object.entries(expenseByCategory).map(([name, value]) => ({
+    name,
+    value,
+  }));
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom' as const,
-        labels: {
-          padding: 20,
-          usePointStyle: true,
-          font: {
-            size: 12,
-          },
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: (context: any) => {
-            const label = context.label || '';
-            const value = context.parsed || 0;
-            return `${label}: $${value.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-          },
-        },
-      },
-    },
+  const COLORS = [
+    '#EF4444', '#F97316', '#F59E0B', '#EAB308', '#84CC16',
+    '#22C55E', '#10B981', '#14B8A6', '#06B6D4', '#0EA5E9',
+    '#3B82F6', '#6366F1', '#8B5CF6', '#A855F7', '#D946EF',
+    '#EC4899', '#F43F5E'
+  ];
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border">
+          <p className="font-medium">{payload[0].name}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            ${payload[0].value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </p>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -91,8 +63,25 @@ export function ExpenseChart() {
       </CardHeader>
       <CardContent>
         <div className="h-80">
-          {Object.keys(expenseByCategory).length > 0 ? (
-            <Pie data={data} options={options} />
+          {data.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
               No expense data for this month

@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useFinanceStore } from '@/store/finance-store';
 import { useAuthStore } from '@/store/auth-store';
 import { toast } from 'sonner';
+import type { Database } from '@/lib/supabase';
+type Account = Database['public']['Tables']['accounts']['Row'];
 
 interface AccountModalProps {
   open: boolean;
@@ -64,7 +66,7 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
     try {
       const accountData = {
         name,
-        type,
+        type: type as Account['type'],
         balance: 0,
         color,
         icon: type, // Use type as icon for simplicity

@@ -10,11 +10,11 @@ interface BottomNavigationProps {
 
 export function BottomNavigation({ activeTab, setActiveTab }: BottomNavigationProps) {
   const navigation = [
-    { id: 'dashboard', label: 'Dashboard', icon: Home },
+    { id: 'dashboard', label: 'Home', icon: Home },
     { id: 'accounts', label: 'Accounts', icon: CreditCard },
     { id: 'transactions', label: 'Records', icon: TrendingUp },
     { id: 'goals', label: 'Goals', icon: Target },
-    { id: 'budgets', label: 'Budgets', icon: PieChart },
+    { id: 'categories', label: 'Categories', icon: Settings },
   ];
 
   return (

@@ -29,7 +29,7 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
   const [showCalculator, setShowCalculator] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { accounts, categories, addTransaction, updateTransaction } = useFinanceStore();
+  const { accounts, categories, addTransaction, updateTransaction, fetchAccounts } = useFinanceStore();
   const { user } = useAuthStore();
 
   const filteredCategories = categories.filter(category => 
@@ -86,7 +86,8 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
         toast.success('Transaction added successfully!');
       }
 
-      await useFinanceStore.getState().fetchAccounts();
+      // Refresh accounts to get updated balances
+      await fetchAccounts();
       onOpenChange(false);
     } catch (error) {
       toast.error(transaction ? 'Failed to update transaction' : 'Failed to add transaction');

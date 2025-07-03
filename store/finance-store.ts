@@ -44,11 +44,7 @@ interface FinanceState {
   
   // Budget methods
   fetchBudgets: () => Promise<void>;
-  addBudget: (budget: Omit<Budget, 'id' | 'created_at' | 'updated_at'> & {
-    start_date?: string;
-    end_date?: string;
-    user_id?: string;
-  }) => Promise<void>;
+  addBudget: (budget: Omit<Budget, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateBudget: (id: string, updates: Partial<Budget>) => Promise<void>;
   deleteBudget: (id: string) => Promise<void>;
 }
@@ -242,9 +238,6 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       set((state) => ({
         transactions: [data, ...state.transactions],
       }));
-      
-      // Refresh accounts to get updated balances from database triggers
-      await get().fetchAccounts();
     } catch (error) {
       console.error('Error adding transaction:', error);
       throw error;
@@ -267,9 +260,6 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
           transaction.id === id ? data : transaction
         ),
       }));
-      
-      // Refresh accounts to get updated balances from database triggers
-      await get().fetchAccounts();
     } catch (error) {
       console.error('Error updating transaction:', error);
       throw error;
@@ -288,9 +278,6 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       set((state) => ({
         transactions: state.transactions.filter((transaction) => transaction.id !== id),
       }));
-      
-      // Refresh accounts to get updated balances from database triggers
-      await get().fetchAccounts();
     } catch (error) {
       console.error('Error deleting transaction:', error);
       throw error;
@@ -316,12 +303,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     try {
       const { data, error } = await supabase
         .from('budgets')
-        .insert([{
-          ...budget,
-          start_date: budget.start_date ?? new Date().toISOString().split('T')[0],
-          end_date: budget.end_date ?? new Date().toISOString().split('T')[0],
-          user_id: budget.user_id ?? '', // Ensure this is set correctly before calling
-        }])
+        .insert([budget])
         .select()
         .single();
       

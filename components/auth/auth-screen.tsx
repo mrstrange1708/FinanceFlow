@@ -2,44 +2,24 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuthStore } from '@/store/auth-store';
 import { toast } from 'sonner';
 import { TrendingUp, DollarSign, PieChart, BarChart3 } from 'lucide-react';
+import { FcGoogle } from 'react-icons/fc';
 
 export function AuthScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuthStore();
+  const { signInWithGoogle } = useAuthStore();
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleSignIn = async () => {
     setLoading(true);
     
     try {
-      await signIn(email, password);
-      toast.success('Welcome back!');
+      await signInWithGoogle();
+      toast.success('Welcome to FinanceFlow!');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to sign in');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    try {
-      await signUp(email, password, fullName);
-      toast.success('Account created successfully!');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create account');
+      toast.error(error.message || 'Failed to sign in with Google');
     } finally {
       setLoading(false);
     }
@@ -101,87 +81,25 @@ export function AuthScreen() {
               <CardHeader>
                 <CardTitle className="text-2xl text-center">Welcome to FinanceFlow</CardTitle>
                 <CardDescription className="text-center">
-                  Start your financial journey today
+                  Sign in with your Google account to get started
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue="signin" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="signin">Sign In</TabsTrigger>
-                    <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="signin">
-                    <form onSubmit={handleSignIn} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="your@email.com"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                          id="password"
-                          type="password"
-                          placeholder="••••••••"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <Button type="submit" className="w-full" disabled={loading}>
-                        {loading ? 'Signing in...' : 'Sign In'}
-                      </Button>
-                    </form>
-                  </TabsContent>
-                  
-                  <TabsContent value="signup">
-                    <form onSubmit={handleSignUp} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="fullName">Full Name</Label>
-                        <Input
-                          id="fullName"
-                          type="text"
-                          placeholder="John Doe"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="your@email.com"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                          id="password"
-                          type="password"
-                          placeholder="••••••••"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <Button type="submit" className="w-full" disabled={loading}>
-                        {loading ? 'Creating account...' : 'Create Account'}
-                      </Button>
-                    </form>
-                  </TabsContent>
-                </Tabs>
+                <Button 
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                  className="w-full h-12 text-lg bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 shadow-sm"
+                  variant="outline"
+                >
+                  <FcGoogle className="w-6 h-6 mr-3" />
+                  {loading ? 'Signing in...' : 'Continue with Google'}
+                </Button>
+                
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    By signing in, you agree to our Terms of Service and Privacy Policy
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>

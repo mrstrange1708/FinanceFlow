@@ -145,6 +145,47 @@ export type Database = {
           updated_at?: string;
         };
       };
+      goals: {
+        Row: {
+          id: string;
+          user_id: string;
+          category_id: string;
+          name: string;
+          target_amount: number;
+          current_amount: number;
+          target_date: string;
+          description: string | null;
+          status: 'active' | 'completed' | 'paused';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          category_id: string;
+          name: string;
+          target_amount: number;
+          current_amount?: number;
+          target_date: string;
+          description?: string | null;
+          status?: 'active' | 'completed' | 'paused';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          category_id?: string;
+          name?: string;
+          target_amount?: number;
+          current_amount?: number;
+          target_date?: string;
+          description?: string | null;
+          status?: 'active' | 'completed' | 'paused';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       user_preferences: {
         Row: {
           id: string;

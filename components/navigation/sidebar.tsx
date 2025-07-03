@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, CreditCard, TrendingUp, PieChart, Settings } from 'lucide-react';
+import { Home, CreditCard, TrendingUp, PieChart, Target, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -14,6 +14,7 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'accounts', label: 'Accounts', icon: CreditCard },
     { id: 'transactions', label: 'Transactions', icon: TrendingUp },
+    { id: 'goals', label: 'Goals', icon: Target },
     { id: 'budgets', label: 'Budgets', icon: PieChart },
     { id: 'categories', label: 'Categories', icon: Settings },
   ];

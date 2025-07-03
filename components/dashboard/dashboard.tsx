@@ -8,9 +8,11 @@ import { FinancialSummary } from '@/components/dashboard/financial-summary';
 import { ExpenseChart } from '@/components/charts/expense-chart';
 import { IncomeChart } from '@/components/charts/income-chart';
 import { BudgetChart } from '@/components/charts/budget-chart';
+import { GoalsChart } from '@/components/charts/goals-chart';
 import { RecentTransactions } from '@/components/transactions/recent-transactions';
 import { AccountsOverview } from '@/components/accounts/accounts-overview';
 import { BudgetsOverview } from '@/components/budgets/budgets-overview';
+import { GoalsOverview } from '@/components/goals/goals-overview';
 import { CategoriesOverview } from '@/components/categories/categories-overview';
 import { TransactionModal } from '@/components/transactions/transaction-modal';
 import { Plus } from 'lucide-react';
@@ -30,6 +32,7 @@ export function Dashboard() {
               <ExpenseChart />
               <IncomeChart />
             </div>
+            <GoalsChart />
             <BudgetChart />
             <RecentTransactions />
           </div>
@@ -38,6 +41,8 @@ export function Dashboard() {
         return <RecentTransactions showAll />;
       case 'accounts':
         return <AccountsOverview />;
+      case 'goals':
+        return <GoalsOverview />;
       case 'budgets':
         return <BudgetsOverview />;
       case 'categories':

@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, CreditCard, TrendingUp, PieChart, Settings } from 'lucide-react';
+import { Home, CreditCard, TrendingUp, PieChart, Target, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BottomNavigationProps {
@@ -13,8 +13,8 @@ export function BottomNavigation({ activeTab, setActiveTab }: BottomNavigationPr
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'accounts', label: 'Accounts', icon: CreditCard },
     { id: 'transactions', label: 'Records', icon: TrendingUp },
+    { id: 'goals', label: 'Goals', icon: Target },
     { id: 'budgets', label: 'Budgets', icon: PieChart },
-    { id: 'categories', label: 'Categories', icon: Settings },
   ];
 
   return (

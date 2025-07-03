@@ -86,8 +86,6 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
         toast.success('Transaction added successfully!');
       }
 
-      // Refresh accounts to get updated balances
-      await fetchAccounts();
       onOpenChange(false);
     } catch (error) {
       toast.error(transaction ? 'Failed to update transaction' : 'Failed to add transaction');

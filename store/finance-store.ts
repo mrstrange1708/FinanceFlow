@@ -238,6 +238,9 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       set((state) => ({
         transactions: [data, ...state.transactions],
       }));
+      
+      // Refresh accounts to get updated balances from database triggers
+      await get().fetchAccounts();
     } catch (error) {
       console.error('Error adding transaction:', error);
       throw error;
@@ -260,6 +263,9 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
           transaction.id === id ? data : transaction
         ),
       }));
+      
+      // Refresh accounts to get updated balances from database triggers
+      await get().fetchAccounts();
     } catch (error) {
       console.error('Error updating transaction:', error);
       throw error;
@@ -278,6 +284,9 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       set((state) => ({
         transactions: state.transactions.filter((transaction) => transaction.id !== id),
       }));
+      
+      // Refresh accounts to get updated balances from database triggers
+      await get().fetchAccounts();
     } catch (error) {
       console.error('Error deleting transaction:', error);
       throw error;

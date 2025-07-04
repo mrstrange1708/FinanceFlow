@@ -8,6 +8,7 @@ import { FinancialSummary } from '@/components/dashboard/financial-summary';
 import { ExpenseChart } from '@/components/charts/expense-chart';
 import { IncomeChart } from '@/components/charts/income-chart';
 import { BudgetChart } from '@/components/charts/budget-chart';
+import { GoalsChart } from '@/components/charts/goals-chart';
 import { RecentTransactions } from '@/components/transactions/recent-transactions';
 import { AccountsOverview } from '@/components/accounts/accounts-overview';
 import { BudgetsOverview } from '@/components/budgets/budgets-overview';
@@ -16,14 +17,10 @@ import { GoalsOverview } from '@/components/goals/goals-overview';
 import { TransactionModal } from '@/components/transactions/transaction-modal';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { GoalModal } from '@/components/goals/goal-modal';
-import { useFinanceStore } from '@/store/finance-store';
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showTransactionModal, setShowTransactionModal] = useState(false);
-  const [showGoalModal, setShowGoalModal] = useState(false);
-  const { goals = [] } = useFinanceStore();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -40,32 +37,12 @@ export function Dashboard() {
             <div className="w-full">
               <BudgetChart />
             </div>
-            {/* Goals Summary Section */}
             <div className="w-full">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Goals</h2>
-                <Button className="bg-amber-600 hover:bg-amber-700" onClick={() => setShowGoalModal(true)}>
-                  Add Goal
-                </Button>
-              </div>
-              {/* Show up to 3 active goals as a preview */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {goals.filter(goal => goal.status === 'active').slice(0, 3).map(goal => (
-                  <div key={goal.id} className="bg-white/80 dark:bg-gray-800/80 border-0 shadow-md rounded-lg p-4">
-                    <div className="font-semibold text-gray-900 dark:text-white mb-1">{goal.name}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Target: ₹{goal.target_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                      <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${Math.min((goal.current_amount / goal.target_amount) * 100, 100)}%` }} />
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">{Math.round((goal.current_amount / goal.target_amount) * 100)}% complete</div>
-                  </div>
-                ))}
-                {goals.filter(goal => goal.status === 'active').length === 0 && (
-                  <div className="text-gray-500 dark:text-gray-400 col-span-full">No active goals yet.</div>
-                )}
-              </div>
+              <GoalsChart />
             </div>
-            <GoalModal open={showGoalModal} onOpenChange={setShowGoalModal} />
+            <div className="w-full">
+              <RecentTransactions />
+            </div>
           </div>
         );
       case 'transactions':

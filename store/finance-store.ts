@@ -16,12 +16,26 @@ type Account = {
 type Category = Database['public']['Tables']['categories']['Row'];
 type Transaction = Database['public']['Tables']['transactions']['Row'];
 type Budget = Database['public']['Tables']['budgets']['Row'];
+type Goal = {
+  id: string;
+  user_id: string;
+  category_id: string;
+  name: string;
+  target_amount: number;
+  current_amount: number;
+  target_date: string;
+  description: string | null;
+  status: 'active' | 'completed' | 'paused';
+  created_at: string;
+  updated_at: string;
+};
 
 interface FinanceState {
   accounts: Account[];
   categories: Category[];
   transactions: Transaction[];
   budgets: Budget[];
+  goals: Goal[];
   loading: boolean;
   
   // Account methods
@@ -44,13 +58,18 @@ interface FinanceState {
   
   // Budget methods
   fetchBudgets: () => Promise<void>;
-  addBudget: (budget: Omit<Budget, 'id' | 'created_at' | 'updated_at'> & {
-    start_date?: string;
-    end_date?: string;
-    user_id?: string;
-  }) => Promise<void>;
+  addBudget: (budget: Omit<Budget, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateBudget: (id: string, updates: Partial<Budget>) => Promise<void>;
   deleteBudget: (id: string) => Promise<void>;
+  
+  // Goal methods
+  fetchGoals: () => Promise<void>;
+  addGoal: (goal: Omit<Goal, 'id' | 'created_at' | 'updated_at' | 'current_amount'>) => Promise<void>;
+  updateGoal: (id: string, updates: Partial<Goal>) => Promise<void>;
+  deleteGoal: (id: string) => Promise<void>;
+  
+  // Utility methods
+  refreshAllData: () => Promise<void>;
 }
 
 export const useFinanceStore = create<FinanceState>((set, get) => ({
@@ -58,11 +77,23 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   categories: [],
   transactions: [],
   budgets: [],
+  goals: [],
   loading: false,
+
+  // Utility method to refresh all data
+  refreshAllData: async () => {
+    const state = get();
+    await Promise.all([
+      state.fetchAccounts(),
+      state.fetchCategories(),
+      state.fetchTransactions(),
+      state.fetchBudgets(),
+      state.fetchGoals(),
+    ]);
+  },
 
   // Account methods
   fetchAccounts: async () => {
-    set({ loading: true });
     try {
       const { data, error } = await supabase
         .from('accounts')
@@ -73,8 +104,6 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       set({ accounts: data || [] });
     } catch (error) {
       console.error('Error fetching accounts:', error);
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -213,7 +242,6 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
 
   // Transaction methods
   fetchTransactions: async () => {
-    set({ loading: true });
     try {
       const { data, error } = await supabase
         .from('transactions')
@@ -224,8 +252,6 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       set({ transactions: data || [] });
     } catch (error) {
       console.error('Error fetching transactions:', error);
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -239,12 +265,8 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       
       if (error) throw error;
       
-      set((state) => ({
-        transactions: [data, ...state.transactions],
-      }));
-      
-      // Refresh accounts to get updated balances from database triggers
-      await get().fetchAccounts();
+      // Refresh all data to ensure consistency
+      await get().refreshAllData();
     } catch (error) {
       console.error('Error adding transaction:', error);
       throw error;
@@ -262,15 +284,8 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       
       if (error) throw error;
       
-      set((state) => ({
-        transactions: state.transactions.map((transaction) =>
-          transaction.id === id ? data : transaction
-        ),
-      }));
-      
-      // Refresh accounts and transactions to get updated balances and data from database triggers
-      await get().fetchAccounts();
-      await get().fetchTransactions();
+      // Refresh all data to ensure consistency
+      await get().refreshAllData();
     } catch (error) {
       console.error('Error updating transaction:', error);
       throw error;
@@ -286,12 +301,8 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       
       if (error) throw error;
       
-      set((state) => ({
-        transactions: state.transactions.filter((transaction) => transaction.id !== id),
-      }));
-      
-      // Refresh accounts to get updated balances from database triggers
-      await get().fetchAccounts();
+      // Refresh all data to ensure consistency
+      await get().refreshAllData();
     } catch (error) {
       console.error('Error deleting transaction:', error);
       throw error;
@@ -317,12 +328,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     try {
       const { data, error } = await supabase
         .from('budgets')
-        .insert([{
-          ...budget,
-          start_date: budget.start_date ?? new Date().toISOString().split('T')[0],
-          end_date: budget.end_date ?? new Date().toISOString().split('T')[0],
-          user_id: budget.user_id ?? '', // Ensure this is set correctly before calling
-        }])
+        .insert([budget])
         .select()
         .single();
       
@@ -373,6 +379,80 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       }));
     } catch (error) {
       console.error('Error deleting budget:', error);
+      throw error;
+    }
+  },
+
+  // Goal methods
+  fetchGoals: async () => {
+    try {
+      const { data, error } = await supabase
+        .from('goals')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      set({ goals: data || [] });
+    } catch (error) {
+      console.error('Error fetching goals:', error);
+    }
+  },
+
+  addGoal: async (goal) => {
+    try {
+      const { data, error } = await supabase
+        .from('goals')
+        .insert([{ ...goal, current_amount: 0 }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      set((state) => ({
+        goals: [data, ...state.goals],
+      }));
+    } catch (error) {
+      console.error('Error adding goal:', error);
+      throw error;
+    }
+  },
+
+  updateGoal: async (id, updates) => {
+    try {
+      const { data, error } = await supabase
+        .from('goals')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      set((state) => ({
+        goals: state.goals.map((goal) =>
+          goal.id === id ? data : goal
+        ),
+      }));
+    } catch (error) {
+      console.error('Error updating goal:', error);
+      throw error;
+    }
+  },
+
+  deleteGoal: async (id) => {
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      set((state) => ({
+        goals: state.goals.filter((goal) => goal.id !== id),
+      }));
+    } catch (error) {
+      console.error('Error deleting goal:', error);
       throw error;
     }
   },

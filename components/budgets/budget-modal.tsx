@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,24 +21,39 @@ export function BudgetModal({ open, onOpenChange, budget }: BudgetModalProps) {
   const [categoryId, setCategoryId] = useState('');
   const [limitAmount, setLimitAmount] = useState('');
   const [month, setMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [period, setPeriod] = useState('monthly');
   const [loading, setLoading] = useState(false);
 
-  const { categories, addBudget, updateBudget } = useFinanceStore();
+  const { categories, addBudget, updateBudget, fetchCategories, refreshAllData } = useFinanceStore();
   const { user } = useAuthStore();
 
   const expenseCategories = categories.filter(category => 
     category.type === 'expense' && (category.is_default || category.user_id === user?.id)
   );
 
+  // Ensure categories are loaded when modal opens
+  const didFetch = useRef(false);
+  useEffect(() => {
+    if (open && categories.length === 0 && !didFetch.current) {
+      fetchCategories();
+      didFetch.current = true;
+    }
+    if (!open) {
+      didFetch.current = false;
+    }
+  }, [open, categories.length, fetchCategories]);
+
   useEffect(() => {
     if (budget) {
       setCategoryId(budget.category_id);
       setLimitAmount(budget.limit_amount.toString());
-      setMonth(budget.month.substring(0, 7)); // Convert YYYY-MM-DD to YYYY-MM
+      setMonth(budget.month ? budget.month.substring(0, 7) : '');
+      setPeriod(budget.period || 'monthly');
     } else {
       setCategoryId('');
       setLimitAmount('');
       setMonth(format(new Date(), 'yyyy-MM'));
+      setPeriod('monthly');
     }
   }, [budget]);
 
@@ -53,7 +68,8 @@ export function BudgetModal({ open, onOpenChange, budget }: BudgetModalProps) {
         user_id: user.id,
         category_id: categoryId,
         limit_amount: parseFloat(limitAmount),
-        month: `${month}-01`, // Convert YYYY-MM to YYYY-MM-01
+        month: month ? `${month}-01` : '',
+        period,
       };
 
       if (budget) {
@@ -63,6 +79,7 @@ export function BudgetModal({ open, onOpenChange, budget }: BudgetModalProps) {
         await addBudget(budgetData);
         toast.success('Budget added successfully!');
       }
+      await refreshAllData();
 
       onOpenChange(false);
     } catch (error: any) {
@@ -122,6 +139,19 @@ export function BudgetModal({ open, onOpenChange, budget }: BudgetModalProps) {
               onChange={(e) => setMonth(e.target.value)}
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="period">Period</Label>
+            <Select value={period} onValueChange={setPeriod} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Select period" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="monthly">Monthly</SelectItem>
+                <SelectItem value="yearly">Yearly</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex gap-2">

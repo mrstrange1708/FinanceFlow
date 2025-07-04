@@ -7,15 +7,18 @@ import { useAuthStore } from '@/store/auth-store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export function DashboardHeader() {
   const { theme, setTheme } = useTheme();
   const { user, signOut } = useAuthStore();
+  const router = useRouter();
 
   const handleSignOut = async () => {
     try {
       await signOut();
       toast.success('Signed out successfully');
+      router.push('/');
     } catch (error) {
       toast.error('Failed to sign out');
     }

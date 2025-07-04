@@ -11,6 +11,7 @@ import { TransactionModal } from '@/components/transactions/transaction-modal';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
 
 interface RecentTransactionsProps {
   showAll?: boolean;
@@ -20,12 +21,29 @@ export function RecentTransactions({ showAll = false }: RecentTransactionsProps)
   const { transactions, categories, accounts, deleteTransaction } = useFinanceStore();
   const [editingTransaction, setEditingTransaction] = useState<any>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [fromDate, setFromDate] = useState<string>('');
+  const [toDate, setToDate] = useState<string>('');
 
   const displayTransactions = showAll ? transactions : transactions.slice(0, 10);
 
-  // Group transactions by date (latest first)
-  const groupedTransactions: { [date: string]: typeof displayTransactions } = {};
-  displayTransactions.forEach((transaction) => {
+  // Filter transactions by date range (inclusive)
+  const filteredTransactions = displayTransactions.filter((transaction) => {
+    const txDate = new Date(transaction.transaction_date);
+    const from = fromDate ? new Date(fromDate) : null;
+    const to = toDate ? new Date(toDate) : null;
+    if (from && txDate < from) return false;
+    if (to) {
+      // Make 'to' inclusive by setting to end of day
+      const toEnd = new Date(to);
+      toEnd.setHours(23, 59, 59, 999);
+      if (txDate > toEnd) return false;
+    }
+    return true;
+  });
+
+  // Group filtered transactions by date (latest first)
+  const groupedTransactions: { [date: string]: typeof filteredTransactions } = {};
+  filteredTransactions.forEach((transaction) => {
     const dateKey = format(new Date(transaction.transaction_date), 'yyyy-MM-dd');
     if (!groupedTransactions[dateKey]) groupedTransactions[dateKey] = [];
     groupedTransactions[dateKey].push(transaction);
@@ -84,9 +102,28 @@ export function RecentTransactions({ showAll = false }: RecentTransactionsProps)
         <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
           {showAll ? 'All Transactions' : 'Recent Transactions'}
         </CardTitle>
+        <div className="flex flex-wrap gap-2 mt-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">From</label>
+            <Input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="w-36" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">To</label>
+            <Input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="w-36" />
+          </div>
+          <div className="flex items-end pb-1">
+            <button
+              type="button"
+              onClick={() => { setFromDate(''); setToDate(''); }}
+              className="ml-2 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        {displayTransactions.length > 0 ? (
+        {filteredTransactions.length > 0 ? (
             <div className="space-y-8">
               {sortedDates.map(dateKey => (
                 <div key={dateKey}>

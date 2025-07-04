@@ -338,7 +338,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
         budgets: [data, ...state.budgets],
       }));
     } catch (error) {
-      console.error('Error adding budget:', error);
+      console.error('Error adding budget:', error instanceof Error ? error.message : error);
       throw error;
     }
   },

@@ -70,7 +70,7 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
       const accountData = {
         name,
         type: type as Account['type'],
-        balance: account ? account.balance : parseFloat(initialAmount || '0'),
+        balance: parseFloat(initialAmount || '0'),
         color,
         icon: type, // Use type as icon for simplicity
       };
@@ -146,7 +146,21 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
             </div>
           </div>
 
-          {!account && (
+          {/* Show Initial Amount for new, Amount for edit */}
+          {account ? (
+            <div className="space-y-2">
+              <Label htmlFor="editAmount">Amount</Label>
+              <Input
+                id="editAmount"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={initialAmount}
+                onChange={(e) => setInitialAmount(e.target.value)}
+                required
+              />
+            </div>
+          ) : (
             <div className="space-y-2">
               <Label htmlFor="initialAmount">Initial Amount</Label>
               <Input

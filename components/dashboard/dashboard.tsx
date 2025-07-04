@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useFinanceStore } from '@/store/finance-store';
 import { BottomNavigation } from '@/components/navigation/bottom-navigation';
 import { Sidebar } from '@/components/navigation/sidebar';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
@@ -22,6 +23,8 @@ export function Dashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showTransactionModal, setShowTransactionModal] = useState(false);
 
+  const { goals } = useFinanceStore();
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -40,9 +43,7 @@ export function Dashboard() {
             <div className="w-full">
               <GoalsChart />
             </div>
-            <div className="w-full">
-              <RecentTransactions />
-            </div>
+            
           </div>
         );
       case 'transactions':

@@ -48,12 +48,20 @@ export function AuthScreen() {
     }
   };
 
+  // Updated Google Sign-In with redirectTo option
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
-    
+
     try {
-      await signInWithGoogle();
-      toast.success('Welcome to FinanceFlow!');
+      // Import supabase dynamically if not already imported elsewhere
+      const { supabase } = await import('@/lib/supabase');
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'https://financeflow.oildelta.com',
+        },
+      });
+      toast.success('Redirecting to Google...');
     } catch (error: any) {
       toast.error(error.message || 'Failed to sign in with Google');
     } finally {

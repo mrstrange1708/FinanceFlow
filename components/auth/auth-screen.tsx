@@ -58,7 +58,7 @@ export function AuthScreen() {
       await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://financeflow.oildelta.com',
+          redirectTo: 'https://financeflow.oidelta.com',
         },
       });
       toast.success('Redirecting to Google...');

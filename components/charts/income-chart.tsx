@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFinanceStore } from '@/store/finance-store';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 
 export function IncomeChart() {
@@ -50,6 +50,18 @@ export function IncomeChart() {
     return null;
   };
 
+  const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, percent, name }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = outerRadius + 32;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+      <text x={x} y={y} fill="#333" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" fontSize={14} fontWeight={500}>
+        {name} {(percent * 100).toFixed(0)}%
+      </text>
+    );
+  };
+
   return (
     <Card className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-0 shadow-lg">
       <CardHeader>
@@ -61,29 +73,48 @@ export function IncomeChart() {
         </p>
       </CardHeader>
       <CardContent>
-        <div className="h-80">
-          {data.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
-              No income data for this month
+        <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12 min-h-[300px]">
+          <div className="w-full sm:w-2/3 flex items-center justify-center" style={{ minHeight: '260px', height: 'min(60vw, 420px)', maxHeight: '420px' }}>
+            {data.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={data}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={window.innerWidth < 640 ? '60%' : '80%'}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={renderCustomLabel}
+                    labelLine={true}
+                    isAnimationActive={true}
+                    animationDuration={900}
+                    animationEasing="ease-out"
+                  >
+                    {data.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                No income data for this month
+              </div>
+            )}
+          </div>
+          {data.length > 0 && (
+            <div className="w-full sm:w-1/3 flex items-center justify-center sm:items-start sm:justify-start">
+              <div className="flex flex-col gap-3 w-full max-w-xs">
+                {data.map((entry, idx) => (
+                  <div key={entry.name} className="flex items-center gap-3 p-2 rounded-md bg-white/80 dark:bg-gray-800/80 shadow border">
+                    <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
+                    <span className="font-medium text-gray-900 dark:text-white flex-1 truncate">{entry.name}</span>
+                    <span className="text-gray-700 dark:text-gray-300 text-sm font-semibold">₹{entry.value.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

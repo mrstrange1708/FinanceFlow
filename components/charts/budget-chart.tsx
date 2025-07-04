@@ -88,11 +88,11 @@ export function BudgetChart({ showAll = false }: BudgetChartProps) {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <Progress 
-                    value={budget.percentage} 
-                    className="h-2"
-                    indicatorClassName={budget.isOverBudget ? 'bg-red-500' : 'bg-green-500'}
-                  />
+                <Progress 
+                  value={budget.percentage} 
+                  className="h-2"
+                  indicatorClassName={budget.isOverBudget ? 'bg-red-500' : 'bg-green-500'}
+                />
                 </CardContent>
               </Card>
             ))}

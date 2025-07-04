@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { format, differenceInDays, parseISO } from 'date-fns';
 
 export function GoalsOverview() {
-  const { goals, categories, deleteGoal } = useFinanceStore();
+  const { goals = [], categories, deleteGoal } = useFinanceStore();
   const [showModal, setShowModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState<any>(null);
 

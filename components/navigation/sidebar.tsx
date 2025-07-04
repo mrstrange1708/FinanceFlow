@@ -14,8 +14,8 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'accounts', label: 'Accounts', icon: CreditCard },
     { id: 'transactions', label: 'Transactions', icon: TrendingUp },
-    { id: 'goals', label: 'Goals', icon: Target },
     { id: 'budgets', label: 'Budgets', icon: PieChart },
+    { id: 'goals', label: 'Goals', icon: Target },
     { id: 'categories', label: 'Categories', icon: Settings },
   ];
 

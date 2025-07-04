@@ -40,6 +40,7 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
   const [name, setName] = useState('');
   const [type, setType] = useState<string>('wallet');
   const [color, setColor] = useState('#3B82F6');
+  const [initialAmount, setInitialAmount] = useState('');
   const [loading, setLoading] = useState(false);
 
   const { addAccount, updateAccount } = useFinanceStore();
@@ -50,10 +51,12 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
       setName(account.name);
       setType(account.type);
       setColor(account.color);
+      setInitialAmount(account.balance.toString());
     } else {
       setName('');
       setType('wallet');
       setColor('#3B82F6');
+      setInitialAmount('');
     }
   }, [account]);
 
@@ -67,7 +70,7 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
       const accountData = {
         name,
         type: type as Account['type'],
-        balance: 0,
+        balance: account ? account.balance : parseFloat(initialAmount || '0'),
         color,
         icon: type, // Use type as icon for simplicity
       };
@@ -142,6 +145,21 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
               ))}
             </div>
           </div>
+
+          {!account && (
+            <div className="space-y-2">
+              <Label htmlFor="initialAmount">Initial Amount</Label>
+              <Input
+                id="initialAmount"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={initialAmount}
+                onChange={(e) => setInitialAmount(e.target.value)}
+                required
+              />
+            </div>
+          )}
 
           <div className="flex gap-2">
             <Button type="submit" disabled={loading} className="flex-1">

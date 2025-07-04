@@ -13,13 +13,14 @@ export function BottomNavigation({ activeTab, setActiveTab }: BottomNavigationPr
     { id: 'dashboard', label: 'Home', icon: Home },
     { id: 'accounts', label: 'Accounts', icon: CreditCard },
     { id: 'transactions', label: 'Records', icon: TrendingUp },
+    { id: 'budgets', label: 'Budgets', icon: PieChart },
     { id: 'goals', label: 'Goals', icon: Target },
     { id: 'categories', label: 'Categories', icon: Settings },
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50">
-      <div className="grid grid-cols-5 h-16">
+      <div className="grid grid-cols-6 h-16">
         {navigation.map((item) => (
           <button
             key={item.id}

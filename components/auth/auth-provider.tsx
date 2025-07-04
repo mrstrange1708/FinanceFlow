@@ -7,7 +7,7 @@ import { LoadingScreen } from '@/components/ui/loading-screen';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { initialize, loading, user } = useAuthStore();
-  const { fetchAccounts, fetchCategories, fetchTransactions, fetchBudgets, fetchGoals } = useFinanceStore();
+  const { fetchAccounts, fetchCategories, fetchTransactions, fetchBudgets } = useFinanceStore();
 
   useEffect(() => {
     initialize();
@@ -20,9 +20,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       fetchCategories();
       fetchTransactions();
       fetchBudgets();
-      fetchGoals();
     }
-  }, [user, fetchAccounts, fetchCategories, fetchTransactions, fetchBudgets, fetchGoals]);
+  }, [user, fetchAccounts, fetchCategories, fetchTransactions, fetchBudgets]);
 
   if (loading) {
     return <LoadingScreen />;

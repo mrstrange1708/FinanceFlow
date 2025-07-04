@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { format, differenceInDays, parseISO } from 'date-fns';
 
 export function GoalsOverview() {
-  const { goals = [], categories, deleteGoal } = useFinanceStore();
+  const { goals = [], categories, deleteGoal, fetchGoals } = useFinanceStore();
   const [showModal, setShowModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState<any>(null);
 
@@ -31,6 +31,7 @@ export function GoalsOverview() {
     try {
       await deleteGoal(id);
       toast.success('Goal deleted successfully');
+      await fetchGoals();
     } catch (error) {
       toast.error('Failed to delete goal');
     }
@@ -229,7 +230,15 @@ export function GoalsOverview() {
 
       <GoalModal
         open={showModal}
-        onOpenChange={handleModalClose}
+        onOpenChange={async (open) => {
+          if (!open) {
+            await fetchGoals();
+            setShowModal(false);
+            setEditingGoal(null);
+          } else {
+            setShowModal(true);
+          }
+        }}
         goal={editingGoal}
       />
     </div>

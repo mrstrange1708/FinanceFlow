@@ -26,7 +26,7 @@ export function GoalModal({ open, onOpenChange, goal }: GoalModalProps) {
   const [status, setStatus] = useState<'active' | 'completed' | 'paused'>('active');
   const [loading, setLoading] = useState(false);
 
-  const { categories, addGoal, updateGoal } = useFinanceStore();
+  const { categories, addGoal, updateGoal, fetchGoals } = useFinanceStore();
   const { user } = useAuthStore();
 
   const availableCategories = categories.filter(category => 
@@ -76,6 +76,8 @@ export function GoalModal({ open, onOpenChange, goal }: GoalModalProps) {
         toast.success('Goal added successfully!');
       }
 
+      // Refresh goals after add/update
+      await fetchGoals();
       onOpenChange(false);
     } catch (error: any) {
       toast.error(goal ? 'Failed to update goal' : 'Failed to add goal');

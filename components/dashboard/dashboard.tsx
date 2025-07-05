@@ -15,6 +15,7 @@ import { AccountsOverview } from '@/components/accounts/accounts-overview';
 import { BudgetsOverview } from '@/components/budgets/budgets-overview';
 import { CategoriesOverview } from '@/components/categories/categories-overview';
 import { GoalsOverview } from '@/components/goals/goals-overview';
+import { ProfilePage } from '@/components/profile/profile-page';
 import { TransactionModal } from '@/components/transactions/transaction-modal';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -56,6 +57,8 @@ export function Dashboard() {
         return <GoalsOverview />;
       case 'categories':
         return <CategoriesOverview />;
+      case 'profile':
+        return <ProfilePage />;
       default:
         return <div>Page not found</div>;
     }
@@ -70,7 +73,7 @@ export function Dashboard() {
 
       {/* Main Content */}
       <div className="lg:pl-64">
-        <DashboardHeader />
+        <DashboardHeader setActiveTab={setActiveTab} />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 lg:pb-6">
           {renderContent()}

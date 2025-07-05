@@ -224,12 +224,30 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
 
   deleteCategory: async (id) => {
     try {
+      // First check if category exists and get its name for better error handling
+      const { data: categoryData, error: fetchError } = await supabase
+        .from('categories')
+        .select('name')
+        .eq('id', id)
+        .single();
+      
+      if (fetchError) {
+        throw new Error('Category not found');
+      }
+
+      // Delete the category
       const { error } = await supabase
         .from('categories')
         .delete()
         .eq('id', id);
       
-      if (error) throw error;
+      if (error) {
+        // Provide more specific error messages
+        if (error.message.includes('foreign key')) {
+          throw new Error(`Cannot delete "${categoryData.name}" because it's being used in transactions, budgets, or goals. Please remove or reassign these items first.`);
+        }
+        throw error;
+      }
       
       set((state) => ({
         categories: state.categories.filter((category) => category.id !== id),

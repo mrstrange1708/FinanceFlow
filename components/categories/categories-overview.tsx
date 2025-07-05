@@ -26,20 +26,11 @@ export function CategoriesOverview() {
   const expenseCategories = userCategories.filter(category => category.type === 'expense');
 
   const handleEdit = (category: any) => {
-    if (category.is_default) {
-      toast.error('Cannot edit default categories');
-      return;
-    }
     setEditingCategory(category);
     setShowModal(true);
   };
 
-  const handleDelete = async (id: string, isDefault: boolean) => {
-    if (isDefault) {
-      toast.error('Cannot delete default categories');
-      return;
-    }
-    
+  const handleDelete = async (id: string) => {
     try {
       await deleteCategory(id);
       toast.success('Category deleted successfully');
@@ -75,14 +66,10 @@ export function CategoriesOverview() {
                     <div className="font-medium text-gray-900 dark:text-white">
                       {category.name}
                     </div>
-                    {category.is_default && (
-                      <Badge variant="secondary" className="text-xs mt-1">
-                        Default
-                      </Badge>
-                    )}
+
                   </div>
                 </div>
-                {!category.is_default && (
+                {(
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm">
@@ -111,7 +98,7 @@ export function CategoriesOverview() {
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction 
-                              onClick={() => handleDelete(category.id, category.is_default)}
+                              onClick={() => handleDelete(category.id)}
                               className="bg-red-600 hover:bg-red-700"
                             >
                               Delete

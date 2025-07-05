@@ -57,7 +57,7 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
         type,
         icon: 'tag',
         color,
-
+        is_default: false,
       };
 
       if (category) {

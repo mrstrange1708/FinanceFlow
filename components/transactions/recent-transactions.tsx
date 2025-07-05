@@ -23,10 +23,11 @@ export function RecentTransactions({ showAll = false }: RecentTransactionsProps)
   const [showEditModal, setShowEditModal] = useState(false);
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
 
   const displayTransactions = showAll ? transactions : transactions.slice(0, 10);
 
-  // Filter transactions by date range (inclusive)
+  // Filter transactions by date range and category (inclusive)
   const filteredTransactions = displayTransactions.filter((transaction) => {
     const txDate = new Date(transaction.transaction_date);
     const from = fromDate ? new Date(fromDate) : null;
@@ -38,6 +39,7 @@ export function RecentTransactions({ showAll = false }: RecentTransactionsProps)
       toEnd.setHours(23, 59, 59, 999);
       if (txDate > toEnd) return false;
     }
+    if (categoryFilter && transaction.category_id !== categoryFilter) return false;
     return true;
   });
 
@@ -111,10 +113,23 @@ export function RecentTransactions({ showAll = false }: RecentTransactionsProps)
             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">To</label>
             <Input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="w-36" />
           </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+            <select
+              value={categoryFilter}
+              onChange={e => setCategoryFilter(e.target.value)}
+              className="w-36 px-2 py-1 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+            >
+              <option value="">All</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
           <div className="flex items-end pb-1">
             <button
               type="button"
-              onClick={() => { setFromDate(''); setToDate(''); }}
+              onClick={() => { setFromDate(''); setToDate(''); setCategoryFilter(''); }}
               className="ml-2 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
             >
               Clear

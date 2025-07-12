@@ -102,17 +102,17 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[95vw] max-w-md mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{transaction ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">{transaction ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="grid grid-cols-2 gap-2">
             <Button
               type="button"
               variant={type === 'income' ? 'default' : 'outline'}
-              className={type === 'income' ? 'bg-green-600 hover:bg-green-700' : 'hover:bg-green-50'}
+              className={`text-sm sm:text-base py-2 px-3 sm:px-4 ${type === 'income' ? 'bg-green-600 hover:bg-green-700' : 'hover:bg-green-50'}`}
               onClick={() => setType('income')}
             >
               Income
@@ -120,7 +120,7 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
             <Button
               type="button"
               variant={type === 'expense' ? 'default' : 'outline'}
-              className={type === 'expense' ? 'bg-red-600 hover:bg-red-700' : 'hover:bg-red-50'}
+              className={`text-sm sm:text-base py-2 px-3 sm:px-4 ${type === 'expense' ? 'bg-red-600 hover:bg-red-700' : 'hover:bg-red-50'}`}
               onClick={() => setType('expense')}
             >
               Expense
@@ -128,14 +128,14 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="account">Account</Label>
+            <Label htmlFor="account" className="text-sm sm:text-base">Account</Label>
             <Select value={accountId} onValueChange={setAccountId} required>
-              <SelectTrigger>
+              <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
                 <SelectValue placeholder="Select account" />
               </SelectTrigger>
               <SelectContent>
                 {accounts.map((account) => (
-                  <SelectItem key={account.id} value={account.id}>
+                  <SelectItem key={account.id} value={account.id} className="text-sm sm:text-base">
                     {account.name} (₹{account.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })})
                   </SelectItem>
                 ))}
@@ -144,14 +144,14 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category" className="text-sm sm:text-base">Category</Label>
             <Select value={categoryId} onValueChange={setCategoryId} required>
-              <SelectTrigger>
+              <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
                 {filteredCategories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
+                  <SelectItem key={category.id} value={category.id} className="text-sm sm:text-base">
                     {category.name}
                   </SelectItem>
                 ))}
@@ -160,7 +160,7 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount">Amount (₹)</Label>
+            <Label htmlFor="amount" className="text-sm sm:text-base">Amount (₹)</Label>
             <div className="flex gap-2">
               <Input
                 id="amount"
@@ -170,11 +170,13 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 required
+                className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
               />
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setShowCalculator(true)}
+                className="h-10 sm:h-11 px-3 sm:px-4 text-sm sm:text-base"
               >
                 Calc
               </Button>
@@ -182,44 +184,56 @@ export function TransactionModal({ open, onOpenChange, transaction }: Transactio
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description (Optional)</Label>
+            <Label htmlFor="description" className="text-sm sm:text-base">Description (Optional)</Label>
             <Textarea
               id="description"
               placeholder="Enter description..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
+              className="text-sm sm:text-base resize-none"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="date">Date</Label>
+              <Label htmlFor="date" className="text-sm sm:text-base">Date</Label>
               <Input
                 id="date"
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
+                className="h-10 sm:h-11 text-sm sm:text-base"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="time">Time</Label>
+              <Label htmlFor="time" className="text-sm sm:text-base">Time</Label>
               <Input
                 id="time"
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 required
+                className="h-10 sm:h-11 text-sm sm:text-base"
               />
             </div>
           </div>
 
-          <div className="flex gap-2">
-            <Button type="submit" disabled={loading} className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-2 pt-2">
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
+            >
               {loading ? (transaction ? 'Updating...' : 'Adding...') : (transaction ? 'Update Transaction' : 'Add Transaction')}
             </Button>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              className="h-10 sm:h-11 text-sm sm:text-base"
+            >
               Cancel
             </Button>
           </div>

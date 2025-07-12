@@ -95,21 +95,21 @@ export function BudgetModal({ open, onOpenChange, budget }: BudgetModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[95vw] max-w-md mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{budget ? 'Edit Budget' : 'Add Budget'}</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">{budget ? 'Edit Budget' : 'Add Budget'}</DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category" className="text-sm sm:text-base">Category</Label>
             <Select value={categoryId} onValueChange={setCategoryId} required>
-              <SelectTrigger>
+              <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
                 {expenseCategories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
+                  <SelectItem key={category.id} value={category.id} className="text-sm sm:text-base">
                     {category.name}
                   </SelectItem>
                 ))}
@@ -118,7 +118,7 @@ export function BudgetModal({ open, onOpenChange, budget }: BudgetModalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="limitAmount">Budget Limit</Label>
+            <Label htmlFor="limitAmount" className="text-sm sm:text-base">Budget Limit</Label>
             <Input
               id="limitAmount"
               type="number"
@@ -127,38 +127,49 @@ export function BudgetModal({ open, onOpenChange, budget }: BudgetModalProps) {
               value={limitAmount}
               onChange={(e) => setLimitAmount(e.target.value)}
               required
+              className="h-10 sm:h-11 text-sm sm:text-base"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="month">Month</Label>
+            <Label htmlFor="month" className="text-sm sm:text-base">Month</Label>
             <Input
               id="month"
               type="month"
               value={month}
               onChange={(e) => setMonth(e.target.value)}
               required
+              className="h-10 sm:h-11 text-sm sm:text-base"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="period">Period</Label>
+            <Label htmlFor="period" className="text-sm sm:text-base">Period</Label>
             <Select value={period} onValueChange={setPeriod} required>
-              <SelectTrigger>
+              <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
                 <SelectValue placeholder="Select period" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="monthly">Monthly</SelectItem>
-                <SelectItem value="yearly">Yearly</SelectItem>
+                <SelectItem value="monthly" className="text-sm sm:text-base">Monthly</SelectItem>
+                <SelectItem value="yearly" className="text-sm sm:text-base">Yearly</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="flex gap-2">
-            <Button type="submit" disabled={loading} className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-2 pt-2">
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
+            >
               {loading ? (budget ? 'Updating...' : 'Adding...') : (budget ? 'Update Budget' : 'Add Budget')}
             </Button>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              className="h-10 sm:h-11 text-sm sm:text-base"
+            >
               Cancel
             </Button>
           </div>

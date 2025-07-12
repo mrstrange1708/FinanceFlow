@@ -96,32 +96,33 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[95vw] max-w-md mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{account ? 'Edit Account' : 'Add Account'}</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">{account ? 'Edit Account' : 'Add Account'}</DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Account Name</Label>
+            <Label htmlFor="name" className="text-sm sm:text-base">Account Name</Label>
             <Input
               id="name"
               placeholder="My Wallet"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className="h-10 sm:h-11 text-sm sm:text-base"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="type">Account Type</Label>
+            <Label htmlFor="type" className="text-sm sm:text-base">Account Type</Label>
             <Select value={type} onValueChange={(value: any) => setType(value)} required>
-              <SelectTrigger>
+              <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
                 <SelectValue placeholder="Select account type" />
               </SelectTrigger>
               <SelectContent>
                 {accountTypes.map((accountType) => (
-                  <SelectItem key={accountType.value} value={accountType.value}>
+                  <SelectItem key={accountType.value} value={accountType.value} className="text-sm sm:text-base">
                     {accountType.label}
                   </SelectItem>
                 ))}
@@ -130,7 +131,7 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="color">Color</Label>
+            <Label htmlFor="color" className="text-sm sm:text-base">Color</Label>
             <div className="flex gap-2 flex-wrap">
               {accountColors.map((colorOption) => (
                 <button
@@ -149,7 +150,7 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
           {/* Show Initial Amount for new, Amount for edit */}
           {account ? (
             <div className="space-y-2">
-              <Label htmlFor="editAmount">Amount</Label>
+              <Label htmlFor="editAmount" className="text-sm sm:text-base">Amount</Label>
               <Input
                 id="editAmount"
                 type="number"
@@ -158,11 +159,12 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
                 value={initialAmount}
                 onChange={(e) => setInitialAmount(e.target.value)}
                 required
+                className="h-10 sm:h-11 text-sm sm:text-base"
               />
             </div>
           ) : (
             <div className="space-y-2">
-              <Label htmlFor="initialAmount">Initial Amount</Label>
+              <Label htmlFor="initialAmount" className="text-sm sm:text-base">Initial Amount</Label>
               <Input
                 id="initialAmount"
                 type="number"
@@ -171,15 +173,25 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
                 value={initialAmount}
                 onChange={(e) => setInitialAmount(e.target.value)}
                 required
+                className="h-10 sm:h-11 text-sm sm:text-base"
               />
             </div>
           )}
 
-          <div className="flex gap-2">
-            <Button type="submit" disabled={loading} className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-2 pt-2">
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
+            >
               {loading ? (account ? 'Updating...' : 'Adding...') : (account ? 'Update Account' : 'Add Account')}
             </Button>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              className="h-10 sm:h-11 text-sm sm:text-base"
+            >
               Cancel
             </Button>
           </div>

@@ -103,22 +103,22 @@ export function Calculator({ onResult, onClose }: CalculatorProps) {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <Card className="w-80 bg-white dark:bg-gray-800">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="font-semibold">Calculator</h3>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <Card className="w-full max-w-sm bg-white dark:bg-gray-800">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b">
+          <h3 className="font-semibold text-sm sm:text-base">Calculator</h3>
+          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
             <X className="w-4 h-4" />
           </Button>
         </div>
-        <CardContent className="p-6">
-          <div className="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-right">
-            <div className="text-2xl font-mono text-gray-900 dark:text-white">
+        <CardContent className="p-4 sm:p-6">
+          <div className="mb-4 p-3 sm:p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-right">
+            <div className="text-xl sm:text-2xl font-mono text-gray-900 dark:text-white">
               {display}
             </div>
           </div>
           
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-1 sm:gap-2">
             {buttons.flat().map((btn, index) => {
               const isOperator = ['+', '-', '*', '/', '='].includes(btn);
               const isSpecial = ['C', '±', '%'].includes(btn);
@@ -127,7 +127,7 @@ export function Calculator({ onResult, onClose }: CalculatorProps) {
                 <Button
                   key={index}
                   variant={isOperator ? 'default' : 'outline'}
-                  className={`h-12 ${
+                  className={`h-10 sm:h-12 text-sm sm:text-base ${
                     btn === '0' ? 'col-span-2' : ''
                   } ${
                     isOperator ? 'bg-amber-600 hover:bg-amber-700' : ''

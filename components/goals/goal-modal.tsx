@@ -88,32 +88,33 @@ export function GoalModal({ open, onOpenChange, goal }: GoalModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[95vw] max-w-md mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{goal ? 'Edit Goal' : 'Add Goal'}</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">{goal ? 'Edit Goal' : 'Add Goal'}</DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Goal Name</Label>
+            <Label htmlFor="name" className="text-sm sm:text-base">Goal Name</Label>
             <Input
               id="name"
               placeholder="Car Purchase, Emergency Fund, etc."
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className="h-10 sm:h-11 text-sm sm:text-base"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category" className="text-sm sm:text-base">Category</Label>
             <Select value={categoryId} onValueChange={setCategoryId} required>
-              <SelectTrigger>
+              <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
                 {availableCategories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
+                  <SelectItem key={category.id} value={category.id} className="text-sm sm:text-base">
                     <div className="flex items-center gap-2">
                       <div 
                         className="w-3 h-3 rounded-full"
@@ -128,7 +129,7 @@ export function GoalModal({ open, onOpenChange, goal }: GoalModalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="targetAmount">Target Amount (₹)</Label>
+            <Label htmlFor="targetAmount" className="text-sm sm:text-base">Target Amount (₹)</Label>
             <Input
               id="targetAmount"
               type="number"
@@ -137,52 +138,64 @@ export function GoalModal({ open, onOpenChange, goal }: GoalModalProps) {
               value={targetAmount}
               onChange={(e) => setTargetAmount(e.target.value)}
               required
+              className="h-10 sm:h-11 text-sm sm:text-base"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="targetDate">Target Date</Label>
+            <Label htmlFor="targetDate" className="text-sm sm:text-base">Target Date</Label>
             <Input
               id="targetDate"
               type="date"
               value={targetDate}
               onChange={(e) => setTargetDate(e.target.value)}
               required
+              className="h-10 sm:h-11 text-sm sm:text-base"
             />
           </div>
 
           {goal && (
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status" className="text-sm sm:text-base">Status</Label>
               <Select value={status} onValueChange={(value: any) => setStatus(value)}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="paused">Paused</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="active" className="text-sm sm:text-base">Active</SelectItem>
+                  <SelectItem value="paused" className="text-sm sm:text-base">Paused</SelectItem>
+                  <SelectItem value="completed" className="text-sm sm:text-base">Completed</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description (Optional)</Label>
+            <Label htmlFor="description" className="text-sm sm:text-base">Description (Optional)</Label>
             <Textarea
               id="description"
               placeholder="Describe your goal..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
+              className="text-sm sm:text-base resize-none"
             />
           </div>
 
-          <div className="flex gap-2">
-            <Button type="submit" disabled={loading} className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-2 pt-2">
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
+            >
               {loading ? (goal ? 'Updating...' : 'Adding...') : (goal ? 'Update Goal' : 'Add Goal')}
             </Button>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              className="h-10 sm:h-11 text-sm sm:text-base"
+            >
               Cancel
             </Button>
           </div>

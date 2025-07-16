@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 import { Database } from '@/lib/supabase';
+import { useAuthStore } from '@/store/auth-store';
 
 type Account = {
   id: string;
@@ -19,7 +20,6 @@ type Budget = Database['public']['Tables']['budgets']['Row'];
 type Goal = {
   id: string;
   user_id: string;
-  category_id: string;
   name: string;
   target_amount: number;
   current_amount: number;
@@ -28,6 +28,7 @@ type Goal = {
   status: 'active' | 'completed' | 'paused';
   created_at: string;
   updated_at: string;
+  category_id?: string; // Make optional
 };
 
 interface FinanceState {
@@ -261,11 +262,13 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   // Transaction methods
   fetchTransactions: async () => {
     try {
+      const user = useAuthStore.getState().user;
+      if (!user) return;
       const { data, error } = await supabase
         .from('transactions')
         .select('*')
+        .eq('user_id', user.id)
         .order('transaction_date', { ascending: false });
-      
       if (error) throw error;
       set({ transactions: data || [] });
     } catch (error) {

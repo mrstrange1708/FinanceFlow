@@ -12,11 +12,22 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { format, differenceInDays, parseISO } from 'date-fns';
+import { useAuthStore } from '@/store/auth-store';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export function GoalsOverview() {
-  const { goals = [], categories, deleteGoal, fetchGoals } = useFinanceStore();
+  const { user } = useAuthStore();
+  const { goals = [], categories, deleteGoal, fetchGoals, addTransaction, fetchAccounts, fetchTransactions, updateGoal } = useFinanceStore();
   const [showModal, setShowModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState<any>(null);
+  const [showFundModal, setShowFundModal] = useState(false);
+  const [fundingGoal, setFundingGoal] = useState<any>(null);
+  const [fundingType, setFundingType] = useState<'add' | 'remove' | null>(null);
+  const [fundAmount, setFundAmount] = useState('');
+  const [fundDescription, setFundDescription] = useState('');
+  const [fundLoading, setFundLoading] = useState(false);
 
   const activeGoals = goals.filter(goal => goal.status === 'active');
   const completedGoals = goals.filter(goal => goal.status === 'completed');
@@ -40,6 +51,54 @@ export function GoalsOverview() {
   const handleModalClose = () => {
     setShowModal(false);
     setEditingGoal(null);
+  };
+
+  const getDefaultGoalCategoryId = () => {
+    const goalCat = categories.find(c => c.name === 'Goals');
+    if (goalCat) return goalCat.id;
+    const otherCat = categories.find(c => c.name === 'Other');
+    if (otherCat) return otherCat.id;
+    return '';
+  };
+
+  const handleFund = (goal: any, type: 'add' | 'remove') => {
+    setFundingGoal(goal);
+    setFundingType(type);
+    setShowFundModal(true);
+  };
+
+  const handleFundModalClose = () => {
+    setShowFundModal(false);
+    setFundingGoal(null);
+    setFundingType(null);
+    setFundAmount('');
+    setFundDescription('');
+  };
+
+  const handleFundSubmit = async () => {
+    if (!fundingGoal || !fundingType || !user) return;
+    if (!fundAmount || isNaN(Number(fundAmount)) || Number(fundAmount) <= 0) {
+      toast.error('Please enter a valid amount.');
+      return;
+    }
+    setFundLoading(true);
+    try {
+      const amount = Math.abs(Number(fundAmount));
+      const isAdd = fundingType === 'add';
+      // Only update goal's current_amount, do not create a transaction
+      const newAmount = isAdd
+        ? (fundingGoal.current_amount || 0) + amount
+        : (fundingGoal.current_amount || 0) - amount;
+      await updateGoal(fundingGoal.id, { current_amount: newAmount });
+      toast.success(isAdd ? 'Funds added to goal!' : 'Funds removed from goal!');
+      handleFundModalClose();
+      await fetchGoals();
+    } catch (error: any) {
+      toast.error('Error updating goal funds.');
+      console.error('Error updating goal:', JSON.stringify(error));
+    } finally {
+      setFundLoading(false);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -169,6 +228,12 @@ export function GoalsOverview() {
               {goal.description}
             </p>
           )}
+
+          {/* Add Funds / Remove Funds buttons below goal details */}
+          <div className="flex gap-2 pt-2">
+            <Button onClick={() => handleFund(goal, 'add')} variant="default" className="flex-1">Add Funds</Button>
+            <Button onClick={() => handleFund(goal, 'remove')} variant="secondary" className="flex-1">Remove Funds</Button>
+          </div>
         </CardContent>
       </Card>
     );
@@ -241,6 +306,35 @@ export function GoalsOverview() {
         }}
         goal={editingGoal}
       />
+      {showFundModal && (
+        <Dialog open={showFundModal} onOpenChange={handleFundModalClose}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{fundingType === 'add' ? 'Add Funds to Goal' : 'Remove Funds from Goal'}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                type="number"
+                min="0.01"
+                step="0.01"
+                placeholder="Amount"
+                value={fundAmount}
+                onChange={e => setFundAmount(e.target.value)}
+                disabled={fundLoading}
+              />
+              <Textarea
+                placeholder="Description (optional)"
+                value={fundDescription}
+                onChange={e => setFundDescription(e.target.value)}
+                disabled={fundLoading}
+              />
+              <Button onClick={handleFundSubmit} disabled={fundLoading} className="w-full">
+                {fundLoading ? 'Processing...' : (fundingType === 'add' ? 'Add Funds' : 'Remove Funds')}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

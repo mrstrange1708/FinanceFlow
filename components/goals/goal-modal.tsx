@@ -19,7 +19,6 @@ interface GoalModalProps {
 
 export function GoalModal({ open, onOpenChange, goal }: GoalModalProps) {
   const [name, setName] = useState('');
-  const [categoryId, setCategoryId] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [targetDate, setTargetDate] = useState('');
   const [description, setDescription] = useState('');
@@ -36,14 +35,12 @@ export function GoalModal({ open, onOpenChange, goal }: GoalModalProps) {
   useEffect(() => {
     if (goal) {
       setName(goal.name);
-      setCategoryId(goal.category_id);
       setTargetAmount(goal.target_amount.toString());
       setTargetDate(goal.target_date);
       setDescription(goal.description || '');
       setStatus(goal.status);
     } else {
       setName('');
-      setCategoryId('');
       setTargetAmount('');
       setTargetDate('');
       setDescription('');
@@ -60,7 +57,6 @@ export function GoalModal({ open, onOpenChange, goal }: GoalModalProps) {
     try {
       const goalData = {
         user_id: user.id,
-        category_id: categoryId,
         name,
         target_amount: parseFloat(targetAmount),
         target_date: targetDate,
@@ -104,28 +100,6 @@ export function GoalModal({ open, onOpenChange, goal }: GoalModalProps) {
               required
               className="h-10 sm:h-11 text-sm sm:text-base"
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="category" className="text-sm sm:text-base">Category</Label>
-            <Select value={categoryId} onValueChange={setCategoryId} required>
-              <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableCategories.map((category) => (
-                  <SelectItem key={category.id} value={category.id} className="text-sm sm:text-base">
-                    <div className="flex items-center gap-2">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: category.color }}
-                      />
-                      {category.name} ({category.type})
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="space-y-2">

@@ -278,6 +278,14 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
 
   addTransaction: async (transaction) => {
     try {
+      // Prevent negative account balance for expense transactions
+      if (transaction.type === 'expense' && transaction.account_id) {
+        const state = get();
+        const account = state.accounts.find(a => a.id === transaction.account_id);
+        if (account && account.balance - transaction.amount < 0) {
+          throw new Error('Insufficient funds: Account balance cannot go negative.');
+        }
+      }
       const { data, error } = await supabase
         .from('transactions')
         .insert([transaction])

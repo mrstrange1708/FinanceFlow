@@ -72,7 +72,7 @@ export function AccountModal({ open, onOpenChange, account }: AccountModalProps)
         type: type as Account['type'],
         balance: parseFloat(initialAmount || '0'),
         color,
-        icon: type, // Use type as icon for simplicity
+        icon: type,
       };
 
       if (account) {
